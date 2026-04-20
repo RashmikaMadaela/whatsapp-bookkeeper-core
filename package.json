@@ -1,0 +1,25 @@
+{
+  "name": "whatsapp_bookkeeper",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000w\u0000h\u0000a\u0000t\u0000s\u0000a\u0000p\u0000p\u0000-\u0000b\u0000o\u0000o\u0000k\u0000k\u0000e\u0000e\u0000p\u0000e\u0000r\u0000-\u0000c\u0000o\u0000r\u0000e\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RashmikaMadaela/whatsapp-bookkeeper-core.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/RashmikaMadaela/whatsapp-bookkeeper-core/issues"
+  },
+  "homepage": "https://github.com/RashmikaMadaela/whatsapp-bookkeeper-core#readme",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.4.2"
+  }
+}
