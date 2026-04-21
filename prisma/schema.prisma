@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+model Transaction {
+  id            String          @id @default(uuid())
+  type          TransactionType
+  date          DateTime
+  amount        Float
+  vendor        String?         // Expense: shop name; Income: null
+  description   String?         // Optional free-text note
+  category      String          // Expense: Food/Beverage|Groceries|Utilities|Transport|Supplies|Other
+                                // Income:  Dine-in|Takeout|Delivery|Catering|Other
+  paymentMethod String?         // Cash|Card|Digital|Platform Payout
+  platform      String?         // Delivery income only: Uber Eats|PickMe Food|Other
+  receiptUrl    String?         // Optional cloud storage link
+  isConfirmed   Boolean         @default(true) // false = auto-timed-out, needs dashboard review
+  senderId      String          // WhatsApp phone number (multi-staff tracking)
+  rawText       String?         // Original message for audit trail
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
