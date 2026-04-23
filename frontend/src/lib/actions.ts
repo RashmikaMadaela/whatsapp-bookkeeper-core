@@ -147,3 +147,64 @@ export async function getDailyTotals(
 
   return Array.from(map.entries()).map(([date, v]) => ({ date, ...v }));
 }
+
+// ---------------------------------------------------------------------------
+// User management (OWNER only — enforce role check at the call site)
+// ---------------------------------------------------------------------------
+import { auth } from "@/auth";
+import bcrypt from "bcryptjs";
+
+export type UserRow = {
+  id: string;
+  name: string;
+  email: string;
+  role: "OWNER" | "STAFF";
+  createdAt: string;
+};
+
+async function requireOwner() {
+  const session = await auth();
+  if (!session || session.user.role !== "OWNER") {
+    throw new Error("Unauthorized");
+  }
+}
+
+export async function listUsers(): Promise<UserRow[]> {
+  await requireOwner();
+  const users = await prisma.user.findMany({ orderBy: { createdAt: "asc" } });
+  return users.map((u) => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    role: u.role as "OWNER" | "STAFF",
+    createdAt: u.createdAt.toISOString().split("T")[0],
+  }));
+}
+
+export async function createUser(data: {
+  name: string;
+  email: string;
+  password: string;
+  role: "OWNER" | "STAFF";
+}): Promise<{ success: boolean; error?: string }> {
+  await requireOwner();
+  try {
+    const hashed = await bcrypt.hash(data.password, 12);
+    await prisma.user.create({
+      data: { name: data.name, email: data.email, password: hashed, role: data.role },
+    });
+    return { success: true };
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    if (msg.includes("Unique constraint")) return { success: false, error: "Email already in use." };
+    return { success: false, error: msg };
+  }
+}
+
+export async function deleteUser(id: string): Promise<{ success: boolean; error?: string }> {
+  await requireOwner();
+  const session = await auth();
+  if (session?.user.id === id) return { success: false, error: "Cannot delete your own account." };
+  await prisma.user.delete({ where: { id } });
+  return { success: true };
+}
