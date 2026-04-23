@@ -8,8 +8,14 @@
  * Requires DATABASE_URL in .env (or environment).
  */
 
-import "dotenv/config";
+import { config } from "dotenv";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 import { createInterface } from "readline";
+
+// Load .env from repo root regardless of cwd
+const __dirname = dirname(fileURLToPath(import.meta.url));
+config({ path: join(__dirname, "..", ".env") });
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
